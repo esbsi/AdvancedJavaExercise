@@ -27,7 +27,7 @@ public class TestSession {
 //            stringBuilder.append();
 
 
-            writer.printf("%-20s%s", "", publicSession.getCourse().getTitle() + "\n---------------------------------------------------------------\n");
+            writer.printf("%-20s%s", "", publicSession.getCourse().getTitle() + "\n----------------------------------------------------------------\n");
             writer.printf("%-20s%s", "Instructor:", publicSession.getInstructor() + "\n");
             writer.printf("%-20s%s", "Location:",
                     publicSession.getLocation().getName() + ", " +
@@ -35,7 +35,7 @@ public class TestSession {
                     publicSession.getLocation().getAddress().getNr() + ", " +
                     publicSession.getLocation().getAddress().getZipCode() + " " +
                     publicSession.getLocation().getAddress().getTown() +
-                    "\n---------------------------------------------------------------\n");
+                    "\n----------------------------------------------------------------\n");
 
 
 
