@@ -1,5 +1,11 @@
 package be.abis.exercise.model;
 
+import be.abis.exercise.exception.ZipCodeNotCorrectException;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.UpperCase;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Address {
 	
 	private String street;
@@ -22,6 +28,38 @@ public class Address {
 		this.country = country;
 		this.countryCode = countryCode;
 	}
+
+
+	// business
+
+	public Boolean checkZipCode() throws ZipCodeNotCorrectException{
+		if ("BE".equals(this.countryCode)){
+			String regex = "\\d{4}";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher= pattern.matcher(this.zipCode);
+			if (!matcher.matches()){
+				throw new ZipCodeNotCorrectException("Zipcode not correct.");
+			}
+			return matcher.matches();
+		}
+		if ("NL".equals(this.countryCode)){
+			String regex = "\\d{4}\\s?[A-Z]{2}";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher= pattern.matcher(this.zipCode);
+			if (!matcher.matches()){
+				throw new ZipCodeNotCorrectException("Zipcode not correct.");
+			}
+			return matcher.matches();
+		} else {
+			return false;
+		}
+
+	}
+
+
+
+
+	// getset
 
 	public String getStreet() {
 		return street;
