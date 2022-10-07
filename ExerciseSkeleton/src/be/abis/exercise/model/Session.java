@@ -2,8 +2,11 @@ package be.abis.exercise.model;
 
 import be.abis.exercise.exception.InvoiceException;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public abstract class Session implements Service {
 	private Course course;
@@ -52,7 +55,10 @@ public abstract class Session implements Service {
 	}
 
 	public abstract Company getOrganizer();
-	
+
+	public abstract double invoice() throws InvoiceException;
+
+
 	@Override
 	public String toString() {
 		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy");
@@ -61,7 +67,20 @@ public abstract class Session implements Service {
 				+ " by " + this.getInstructor().toString() + " on " + fmt.format(this.getDate()) + ".";
 	}
 
-	public abstract double invoice() throws InvoiceException;
+	public String toString(String localeName) {
+		Locale dk = new Locale(localeName);
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy", dk);
+//		String baseName = "C:\\Users\\Duser\\IdeaProjects\\advancedjava\\ExerciseSkeleton\\src\\be\\abis\\i18n\\resources\\applicationResources";
+		String baseName = "be.abis.i18n.resources.applicationResources";
+		ResourceBundle bundle = ResourceBundle.getBundle(baseName, dk);
+		return bundle.getString("theSessionAbout") + this.getCourse().getTitle() + " "
+				+ bundle.getString("willBeGivenAt") + this.getLocation().getName() + " "
+				+ MessageFormat.format(bundle.getString("byXonY"),  this.getInstructor().toString(), fmt.format(this.getDate()));
+	}
 
 
+	/*
+			locale = Locale.getDefault();
+		Locale.setDefault(new Locale("dk"));
+	 */
 }

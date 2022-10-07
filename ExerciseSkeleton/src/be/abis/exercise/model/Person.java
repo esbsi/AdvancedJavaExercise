@@ -1,6 +1,8 @@
 package be.abis.exercise.model;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 
 public class Person implements Instructor, CourseParticipant, Comparable<CourseParticipant> {
@@ -127,7 +129,23 @@ public class Person implements Instructor, CourseParticipant, Comparable<CourseP
 		public int compare(CourseParticipant o1, CourseParticipant o2) {
 			return ((Person)o1).getFirstName().compareToIgnoreCase(((Person)o2).getFirstName());
 		}
-    	 
     }
-    
+
+	@Override
+	public boolean equals(Object o){
+		Person person = (Person)o;
+		if (this.lastName.equals(person.lastName) && this.firstName.equals(person.firstName) && this.birthDate.equals(person.birthDate)){
+			return true;
+		} else return false;
+	}
+
+	@Override
+	public int hashCode(){
+		return lastName.length();
+	}
+
+	public int calculateAge(){
+		return Period.between(birthDate, LocalDate.now()).getYears();
+	}
+
 }

@@ -3,9 +3,12 @@ package be.abis.exercise.model;
 
 import be.abis.exercise.exception.InvoiceException;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class PublicSession extends Session {
 	
@@ -71,7 +74,22 @@ public class PublicSession extends Session {
 		return enrolments.iterator();
 	}
 	
-	
+	public BigDecimal calculateSessionRevenue(){
+		BigDecimal dailyPriceBD = new BigDecimal(((Double)this.getCourse().getDailyPrice()).toString());
+		BigDecimal daysBD = new BigDecimal(((Integer)(this.getCourse().getDays())).toString());
+		BigDecimal enrolmentsBD = new BigDecimal(((Integer)enrolments.size()).toString());
+		BigDecimal fees = enrolmentsBD.multiply(dailyPriceBD.multiply(daysBD));
+		BigDecimal tax = new BigDecimal("0.21");
+		return fees.multiply(BigDecimal.ONE.subtract(tax));
+	}
+
+	public void printSessionRevenue(){
+		BigDecimal bd = calculateSessionRevenue();
+		double sessionRevenue = bd.doubleValue();
+		NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("nl", "BE"));
+
+		System.out.println(sessionRevenue);
+	}
 
 	
 }

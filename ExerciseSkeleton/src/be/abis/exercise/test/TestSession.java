@@ -25,22 +25,33 @@ public class TestSession {
         try(PrintWriter writer = new PrintWriter(new FileWriter(fileLocation))){
 //            StringBuilder stringBuilder = new StringBuilder();
 //            stringBuilder.append();
-
-
-            writer.printf("%-20s%s", "", publicSession.getCourse().getTitle() + "\n----------------------------------------------------------------\n");
+            int lineLength = 80;
+            String horizontalLine = new String(new char[lineLength]).replace("\0", "-");
+            String courseTitle = publicSession.getCourse().getTitle();
+            String regexTitle = "%-" + (lineLength/2 - courseTitle.length()/2) + "s%s";
+            writer.printf(regexTitle, "", courseTitle + "\n" + horizontalLine + "\n"); // Center title
             writer.printf("%-20s%s", "Instructor:", publicSession.getInstructor() + "\n");
             writer.printf("%-20s%s", "Location:",
                     publicSession.getLocation().getName() + ", " +
                     publicSession.getLocation().getAddress().getStreet() + " " +
                     publicSession.getLocation().getAddress().getNr() + ", " +
                     publicSession.getLocation().getAddress().getZipCode() + " " +
-                    publicSession.getLocation().getAddress().getTown() +
-                    "\n----------------------------------------------------------------\n");
-
-
-
+                    publicSession.getLocation().getAddress().getTown() + "\n" + horizontalLine + "\n"
+                    );
+            writer.printf("%-6s%-35s%s", "index", "company", "participant");
         }
+    }
 
+    @Test
+    public void printRevenue(){
+        publicSession.addEnrolment(personRepository.findPersonByListIndex(1));
+        publicSession.addEnrolment(personRepository.findPersonByListIndex(2));
+        publicSession.printSessionRevenue();
+    }
+
+    @Test
+    public void printToStringDk(){
+        System.out.println(publicSession.toString("dk"));
     }
 
 }
