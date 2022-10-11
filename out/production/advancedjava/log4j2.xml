@@ -7,7 +7,7 @@
         </Console>
         <File name="ErrorFile" fileName="/temp/javacourses/exceptions.json" immediateFlush="false"
               append="false">
-            <!--            <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" includeTimeMillis="true"/> -->
+<!--            <JSONLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true" includeTimeMillis="true"/> -->
             <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json" />
         </File>
     </Appenders>
