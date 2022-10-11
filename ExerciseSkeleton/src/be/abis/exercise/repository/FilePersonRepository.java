@@ -1,16 +1,25 @@
 package be.abis.exercise.repository;
 
+import be.abis.exercise.exception.PersonNotFoundException;
 import be.abis.exercise.model.Address;
 import be.abis.exercise.model.Company;
 import be.abis.exercise.model.Person;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FilePersonRepository implements PersonRepository{
+
+    Logger logger = LogManager.getLogger();
+    Logger exceptionLogger = LogManager.getLogger("exceptionLogger");
+
+
 
     private List<Person> persons = new ArrayList<>();
     private String fileLocation = "/temp/javacourses/persons.csv";
@@ -46,24 +55,28 @@ public class FilePersonRepository implements PersonRepository{
             String line;
             while ((line = reader.readLine()) != null){
                 String[] personAttributes = line.split(";");
-                personsFromFile.add(new Person(
-                        personAttributes[1],
-                        personAttributes[2],
-                        LocalDate.parse(personAttributes[3], DateTimeFormatter.ofPattern("d/M/yyyy")),
-                        personAttributes[4],
-                        personAttributes[5],
-                        new Company(
-                                personAttributes[6],
-                                new Address(
-                                        personAttributes[7],
-                                        personAttributes[8],
-                                        personAttributes[9],
-                                        personAttributes[10],
-                                        personAttributes[11],
-                                        personAttributes[12]
-                                )
-                            )
-                        ));
+
+                Person person = new Person(
+                personAttributes[1],
+                personAttributes[2],
+                LocalDate.parse(personAttributes[3], DateTimeFormatter.ofPattern("d/M/yyyy")),
+                personAttributes[4],
+                personAttributes[5],
+                new Company(
+                        personAttributes[6],
+                        new Address(
+                                personAttributes[7],
+                                personAttributes[8],
+                                personAttributes[9],
+                                personAttributes[10],
+                                personAttributes[11],
+                                personAttributes[12]
+                        )
+                    )
+                );
+
+                person.setPersonNumber(Integer.parseInt(personAttributes[0]));
+                personsFromFile.add(person);
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -75,6 +88,31 @@ public class FilePersonRepository implements PersonRepository{
     public Person findPersonByListIndex(int i){
         return persons.get(i);
     }
+
+    public Person findPersonById(int id) throws PersonNotFoundException {
+        List<Person> persons = getPersonsFromFile();
+        Person foundPerson = persons.stream()
+                                    .filter(person -> person.getPersonNumber() == id)
+                                    .findFirst().orElseThrow(() -> {
+                                        PersonNotFoundException e = new PersonNotFoundException("Person not found");
+                                        logger.error(e.getMessage());
+                                        exceptionLogger.error(e.getMessage());
+                                        return e;});
+        return foundPerson;
+    }
+
+    public Person findPerson(String email, String password) throws PersonNotFoundException {
+        List<Person> persons = getPersonsFromFile();
+        Person foundPerson = persons.stream()
+                .filter(person -> email.equals(person.getEmail()))
+                .filter(person -> password.equals(person.getPassword()))
+                .findFirst().orElseThrow(() -> {
+                    PersonNotFoundException e = new PersonNotFoundException("Person not found");
+                    logger.error(e.getMessage());
+                    return e;});
+        return foundPerson;
+    }
+
 
 
 

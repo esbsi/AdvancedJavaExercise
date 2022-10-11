@@ -1,5 +1,5 @@
 package be.abis.exercise.model;
-public class Company implements Comparable<Company>{
+public class Company implements Comparable<Company> {
 	
 	private String name;
 	private Address address;
@@ -40,5 +40,15 @@ public class Company implements Comparable<Company>{
 	@Override
 	public int compareTo(Company o) {
 		return this.getName().compareTo(o.getName());
+	}
+
+	@Override
+	public boolean equals(Object o){
+		return this.getName().equals(((Company)o).getName());
+	}
+
+	@Override
+	public int hashCode(){
+		return name.length();
 	}
 }
