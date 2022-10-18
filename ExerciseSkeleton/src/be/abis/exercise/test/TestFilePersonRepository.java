@@ -10,14 +10,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestFilePersonRepository {
 
     Logger logger = LogManager.getLogger();
     Logger exceptionLogger = LogManager.getLogger("exceptionLogger");
-
 
     FilePersonRepository filePersonRepository = new FilePersonRepository();
 
@@ -138,7 +143,27 @@ public class TestFilePersonRepository {
 
     @Test
     public void ex5() {
-        List<Person> personList = filePersonRepository.getPersons();
+        List<Person> personListFiltered = new ArrayList<>();
+        try (Stream<String> lines = Files.lines(Paths.get(filePersonRepository.getFileLocation()))){
+            personListFiltered = lines
+                    .map(line -> line.split(";"))
+                    .map(a -> {
+                        try {
+                            return filePersonRepository.findPersonById(Integer.parseInt(a[0]));
+                        } catch (PersonNotFoundException e) {
+                            System.out.println("Person not found.");
+                        } return null;
+                    })
+                    .filter(person -> "Belgium".equalsIgnoreCase(person.getCompany().getAddress().getCountry())
+                    | "België".equalsIgnoreCase(person.getCompany().getAddress().getCountry())
+                    | "Belgique".equalsIgnoreCase(person.getCompany().getAddress().getCountry())
+                    && (person.calculateAge()>40))
+                    .filter(person -> (person.calculateAge()>40))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.out.println("Can not read file.");
+        }
+/*        List<Person> personList = filePersonRepository.getPersons();
         List<Person> personListFiltered = personList.stream()
                 .filter(person -> "Belgium".equalsIgnoreCase(person.getCompany().getAddress().getCountry())
                     | "België".equalsIgnoreCase(person.getCompany().getAddress().getCountry())
@@ -147,6 +172,14 @@ public class TestFilePersonRepository {
                 .filter(person -> (person.calculateAge()>40))
                 .collect(Collectors.toList());
         System.out.println(personListFiltered);
+ */
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("/temp/javacourses/personsfiltered.txt"))){
+            for (Person person : personListFiltered){
+                writer.append(person.toString()).append("\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Can not write to file.");
         }
+    }
 
 }

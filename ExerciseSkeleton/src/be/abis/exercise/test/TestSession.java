@@ -8,7 +8,13 @@ import org.junit.jupiter.api.Test;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TestSession {
 
@@ -20,11 +26,9 @@ public class TestSession {
     @Test
     public void printToFile() throws IOException {
         publicSession.addEnrolment(personRepository.findPersonByListIndex(1));
+        publicSession.addEnrolment(personRepository.findPersonByListIndex(4));
         publicSession.addEnrolment(personRepository.findPersonByListIndex(2));
-
         try(PrintWriter writer = new PrintWriter(new FileWriter(fileLocation))){
-//            StringBuilder stringBuilder = new StringBuilder();
-//            stringBuilder.append();
             int lineLength = 80;
             String horizontalLine = new String(new char[lineLength]).replace("\0", "-");
             String courseTitle = publicSession.getCourse().getTitle();
@@ -38,7 +42,17 @@ public class TestSession {
                     publicSession.getLocation().getAddress().getZipCode() + " " +
                     publicSession.getLocation().getAddress().getTown() + "\n" + horizontalLine + "\n"
                     );
-            writer.printf("%-6s%-35s%s", "index", "company", "participant");
+            DecimalFormat decimalFormat = new DecimalFormat("00");
+            List<Person> participantsSortedByCompany = publicSession.getEnrolments().stream()
+                                                                        .map(a -> (Person)a)
+                                                                        .sorted(Comparator.comparing(a -> a.getCompany().getName()))
+                                                                        .collect(Collectors.toList());
+            int i = 0;
+            for (Person person : participantsSortedByCompany) {
+                i++;
+                writer.printf("%-6s%-35s%s", decimalFormat.format(i), person.getCompany().getName(),
+                        person.getFirstName() + " " + person.getLastName().toUpperCase() + "\n");
+            } writer.printf(horizontalLine);
         }
     }
 

@@ -4,6 +4,8 @@ package be.abis.exercise.model;
 import be.abis.exercise.exception.InvoiceException;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import java.util.Locale;
 public class PublicSession extends Session {
 	
 	public final static Company ABIS = new Company("Abis");
-	private ArrayList<CourseParticipant> enrolments = new ArrayList<CourseParticipant>();
+	private ArrayList<CourseParticipant> enrolments = new ArrayList<>();
 
 	public PublicSession(Course course, LocalDate date, Company location,
 			Instructor instructor) {
@@ -86,9 +88,12 @@ public class PublicSession extends Session {
 	public void printSessionRevenue(){
 		BigDecimal bd = calculateSessionRevenue();
 		double sessionRevenue = bd.doubleValue();
-		NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("nl", "BE"));
-
-		System.out.println(sessionRevenue);
+		DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.getDefault());
+		decimalFormatSymbols.setDecimalSeparator(',');
+		DecimalFormat decimalFormat = new DecimalFormat("€#0.00", decimalFormatSymbols);
+		System.out.println(decimalFormat.format(sessionRevenue));
+//		NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("nl", "BE"));
+//		System.out.println(numberFormat.format(sessionRevenue));
 	}
 
 	

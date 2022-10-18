@@ -19,10 +19,8 @@ public class FilePersonRepository implements PersonRepository{
     Logger logger = LogManager.getLogger();
     Logger exceptionLogger = LogManager.getLogger("exceptionLogger");
 
-
-
-    private List<Person> persons = new ArrayList<>();
-    private String fileLocation = "/temp/javacourses/persons.csv";
+    private List<Person> persons;
+    private String fileLocation = "ExerciseSkeleton/src/be/abis/exercise/resources/persons.csv";
 
     public FilePersonRepository() {
         this.persons = getPersonsFromFile();
@@ -51,7 +49,7 @@ public class FilePersonRepository implements PersonRepository{
 
     public List<Person> getPersonsFromFile() throws RuntimeException {
         List<Person> personsFromFile = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("/temp/javacourses/persons.csv"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileLocation))) {
             String line;
             while ((line = reader.readLine()) != null){
                 String[] personAttributes = line.split(";");
@@ -78,11 +76,10 @@ public class FilePersonRepository implements PersonRepository{
                 person.setPersonNumber(Integer.parseInt(personAttributes[0]));
                 personsFromFile.add(person);
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } return personsFromFile;
+        }
+        return personsFromFile;
     }
 
     public Person findPersonByListIndex(int i){
@@ -91,26 +88,24 @@ public class FilePersonRepository implements PersonRepository{
 
     public Person findPersonById(int id) throws PersonNotFoundException {
         List<Person> persons = getPersonsFromFile();
-        Person foundPerson = persons.stream()
-                                    .filter(person -> person.getPersonNumber() == id)
-                                    .findFirst().orElseThrow(() -> {
-                                        PersonNotFoundException e = new PersonNotFoundException("Person not found");
-                                        logger.error(e.getMessage());
-                                        exceptionLogger.error(e.getMessage());
-                                        return e;});
-        return foundPerson;
+        return persons.stream()
+                    .filter(person -> person.getPersonNumber() == id)
+                    .findFirst().orElseThrow(() -> {
+                        PersonNotFoundException e = new PersonNotFoundException("Person not found");
+                        logger.error(e.getMessage());
+                        exceptionLogger.error(e.getMessage());
+                        return e;});
     }
 
     public Person findPerson(String email, String password) throws PersonNotFoundException {
         List<Person> persons = getPersonsFromFile();
-        Person foundPerson = persons.stream()
-                .filter(person -> email.equals(person.getEmail()))
-                .filter(person -> password.equals(person.getPassword()))
-                .findFirst().orElseThrow(() -> {
-                    PersonNotFoundException e = new PersonNotFoundException("Person not found");
-                    logger.error(e.getMessage());
-                    return e;});
-        return foundPerson;
+        return persons.stream()
+                    .filter(person -> email.equals(person.getEmail()))
+                    .filter(person -> password.equals(person.getPassword()))
+                    .findFirst().orElseThrow(() -> {
+                        PersonNotFoundException e = new PersonNotFoundException("Person not found");
+                        logger.error(e.getMessage());
+                        return e;});
     }
 
 
@@ -122,5 +117,8 @@ public class FilePersonRepository implements PersonRepository{
         return persons;
     }
 
+    public String getFileLocation() {
+        return fileLocation;
+    }
 
 }
