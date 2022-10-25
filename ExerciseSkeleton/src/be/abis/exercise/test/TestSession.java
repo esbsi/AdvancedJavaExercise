@@ -3,6 +3,7 @@ package be.abis.exercise.test;
 import be.abis.exercise.model.*;
 import be.abis.exercise.repository.FilePersonRepository;
 import be.abis.exercise.repository.PersonRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileWriter;
@@ -23,11 +24,15 @@ public class TestSession {
     PublicSession publicSession = new PublicSession(Course.JAVA_ADVANCED, LocalDate.now(), ((Person)instructor).getCompany(), instructor);
     String fileLocation = "/temp/javacourses/fancyFormattedCourse.txt";
 
-    @Test
-    public void printToFile() throws IOException {
+    @BeforeEach
+    public void setup(){
         publicSession.addEnrolment(personRepository.findPersonByListIndex(1));
         publicSession.addEnrolment(personRepository.findPersonByListIndex(4));
         publicSession.addEnrolment(personRepository.findPersonByListIndex(2));
+    }
+
+    @Test
+    public void printToFile() throws IOException {
         try(PrintWriter writer = new PrintWriter(new FileWriter(fileLocation))){
             int lineLength = 80;
             String horizontalLine = new String(new char[lineLength]).replace("\0", "-");
@@ -66,6 +71,17 @@ public class TestSession {
     @Test
     public void printToStringDk(){
         System.out.println(publicSession.toString("dk"));
+    }
+
+    @Test
+    public void shouldPrintEnrolments(){
+        publicSession.printParticipants();
+    }
+
+    @Test
+    public void shouldRemoveAbisParticipants(){
+        publicSession.removeAbisParticipants();
+        publicSession.printParticipants();
     }
 
 }

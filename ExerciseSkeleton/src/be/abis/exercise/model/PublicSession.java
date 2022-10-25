@@ -10,7 +10,9 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class PublicSession extends Session {
 	
@@ -96,5 +98,28 @@ public class PublicSession extends Session {
 //		System.out.println(numberFormat.format(sessionRevenue));
 	}
 
-	
+	public void printParticipants(){
+		for (CourseParticipant courseParticipant : enrolments){
+			System.out.println(courseParticipant + ". Company: " +((Person)courseParticipant).getCompany().getName());
+		}
+	}
+
+	public List<CourseParticipant> findAbisParticipants(){
+		return enrolments.stream()
+				.filter(courseParticipant -> "Abis".equalsIgnoreCase(((Person)courseParticipant).getCompany().getName()))
+				.collect(Collectors.toList());
+	}
+
+	public void removeAbisParticipants(){
+		Iterator<CourseParticipant> iterator = enrolments.iterator();
+		while (iterator.hasNext()){
+//			CourseParticipant courseParticipant = iterator.next();
+			if ("Abis".equalsIgnoreCase((((Person)iterator.next()).getCompany()).getName())){
+				iterator.remove();
+			}
+		}
+	}
+
+//	public void removeAbisParticipants(){enrolments.removeIf(courseParticipant -> "Abis".equalsIgnoreCase((((Person) courseParticipant).getCompany()).getName()));}
+
 }
